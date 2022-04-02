@@ -11,6 +11,16 @@ const PORT = 3000;
 
 const jwt = require("jsonwebtoken");
 
+const authorizeUser = (req, res, next) => {
+  const authHeader = req.header("Authorization");
+  if (authHeader) {
+    const token = authHeader.split(" ")[1];
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    req.token = token;
+  }
+  next();
+};
+
 app.use(express.json());
 
 app.post("/", async (req, res) => {
@@ -30,6 +40,25 @@ const createUserToken = user => {
     { expiresIn: "24 h", subject: userId }
   ));
 };
+
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  const user = await User.login(username, password);
+  if (user) {
+    const token = createUserToken(user);
+    return res.json({ user: user, token: token });
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+app.get("/login", async (req, res) => {
+  const user = req.body;
+  const username = user.username;
+  const currentUser = await User.findOne({ username: username });
+  console.log(user, username, currentUser);
+  res.json({ user: currentUser });
+});
 
 mongoose.connect(`mongodb://localhost/toDoList`);
 
