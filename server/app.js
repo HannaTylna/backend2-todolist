@@ -56,7 +56,7 @@ app.get("/login", async (req, res) => {
   const user = req.body;
   const username = user.username;
   const currentUser = await User.findOne({ username: username });
-  console.log(user, username, currentUser);
+
   res.json({ user: currentUser });
 });
 
