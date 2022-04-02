@@ -60,6 +60,17 @@ app.get("/login", async (req, res) => {
   res.json({ user: currentUser });
 });
 
+app.put("/logout", authorizeUser, async (req, res) => {
+  const authHeader = req.headers["Authorization"];
+  jwt.sign(authHeader, "", { expiresIn: 1 }, (logout, err) => {
+    if (logout) {
+      res.json("You have been logged out!");
+    } else {
+      res.sendStatus(404);
+    }
+  });
+});
+
 mongoose.connect(`mongodb://localhost/toDoList`);
 
 app.listen(PORT, () => {
