@@ -3,11 +3,19 @@ const mongoose = require("mongoose");
 const { User } = require("./models/user");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
+const cors = require("cors");
 
 dotenv.config();
-
 const app = express();
-const PORT = 3000;
+const PORT = 8000;
+
+// app.use(cors());
+
+// app.post("/login", (req, res) => {
+//   res.send({
+//     token: "test123"
+//   });
+// });
 
 const jwt = require("jsonwebtoken");
 
@@ -21,6 +29,14 @@ const authorizeUser = (req, res, next) => {
   next();
 };
 
+app.use(
+  cors()
+  //   {
+  //   origin: ["http://localhost:3000"],
+  //   methods: [“GET”, “POST”],
+  //   credentials: true,
+  // }
+);
 app.use(express.json());
 
 app.post("/", async (req, res) => {
