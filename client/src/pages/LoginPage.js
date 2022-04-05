@@ -1,27 +1,35 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AppContext } from "../App";
 
-async function loginUser(credentials) {
-  return fetch("http://localhost:8000/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(credentials)
-  }).then(data => data.json());
-}
+export default function LoginPage(props) {
+  // const [username, setUsername] = useState("");
+  // const [password, setPassword] = useState("");
+  const { username, setUsername } = useContext(AppContext);
+  const { password, setPassword } = useContext(AppContext);
 
-export default function LoginPage({ setToken }) {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
+  const navigate = useNavigate();
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const token = await loginUser({
-      username,
-      password
-    });
-    setToken(token);
+
+    const payload = { username, password };
+    const API_URL = "http://localhost:8000/login";
+
+    fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+      .then(res => res.json())
+      .then(data => {
+        //console.log(data);
+        const token = data.token;
+        localStorage.setItem("todolist", token);
+        navigate("/home");
+      });
   };
   return (
     <>
@@ -31,6 +39,7 @@ export default function LoginPage({ setToken }) {
         <input
           type="text"
           name="username"
+          value={username}
           onChange={e => setUsername(e.target.value)}
         />
         <br />
@@ -39,6 +48,7 @@ export default function LoginPage({ setToken }) {
         <input
           type="password"
           name="password"
+          value={password}
           onChange={e => setPassword(e.target.value)}
         />
         <br />
@@ -53,6 +63,3 @@ export default function LoginPage({ setToken }) {
     </>
   );
 }
-// LoginPage.propTypes = {
-//   setToken: PropTypes.func.isRequired
-// };
