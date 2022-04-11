@@ -10,7 +10,6 @@ const authorizeUser = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
     req.user = jwt.verify(token, process.env.JWT_SECRET);
     req.token = token;
-    console.log(req.token);
   }
   next();
 };
@@ -44,12 +43,6 @@ router.post("/login", async (req, res) => {
   } else {
     res.sendStatus(401);
   }
-});
-
-router.get("/home", async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username: username });
-  res.json({ user: user });
 });
 
 router.get("/logout", async (req, res) => {
