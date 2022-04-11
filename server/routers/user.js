@@ -4,18 +4,6 @@ const jwt = require("jsonwebtoken");
 
 const router = Router();
 
-const authorizeUser = async (req, res, next) => {
-  const authHeader = req.header("Authorization");
-  if (authHeader) {
-    const token = authHeader.split(" ")[1];
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
-    req.token = token;
-  }
-  next();
-};
-
-router.use(authorizeUser);
-
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
   const user = new User({ username, password });
@@ -42,6 +30,16 @@ router.post("/login", async (req, res) => {
     return res.json({ user: user, token: token });
   } else {
     res.sendStatus(401);
+  }
+});
+
+router.get("/:username", async (req, res) => {
+  const username = req.params.username;
+  const user = await User.findOne({ username: username });
+  if (user) {
+    res.json(user);
+  } else {
+    res.sendStatus(400);
   }
 });
 
