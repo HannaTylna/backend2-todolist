@@ -1,27 +1,33 @@
 const { Router } = require("express");
 const { User } = require("../models/user");
 const { Todo } = require("../models/todo");
+const { requireLogin } = require("./user");
 
 const router = Router();
 
-router.get("/", async (req, res) => {
-  try {
-    const todos = await Todo.find({}).sort({ createdAt: -1 });
-    res.json({ todos });
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Failed to get todo");
-  }
-});
-
 router.post("/", async (req, res) => {
+  const { userId } = req.user;
+  const task = req.body.task;
+  const todo = new Todo({ createdBy: userId, task });
   try {
-    const todo = new Todo(req.body);
-    await todo.save();
-    res.json({ todo });
+    const savedTask = await todo.save();
+    res.status(200).json({ task: savedTask });
   } catch (err) {
     console.log(err);
     res.status(500).send("Something is wrong");
+  }
+});
+
+router.get("/", async (req, res) => {
+  const userId = req.user.userId;
+  try {
+    const todos = await Todo.find({ createdBy: userId })
+      .sort({ createdAt: -1 })
+      .populate("createdBy")
+      .exec();
+    res.status(200).json(todos);
+  } catch (err) {
+    res.status(500).send("Failed to get todo");
   }
 });
 

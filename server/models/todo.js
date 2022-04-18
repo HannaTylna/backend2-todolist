@@ -4,24 +4,21 @@ const moment = require("moment");
 const todoSchema = new mongoose.Schema({
   task: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   createdAt: {
     type: String,
     immutable: true, //Immutable data cannot be changed once created
     default: () => moment().format("YYYY-MM-DD HH-MM-SS")
   },
-  completed: {
+  isCompleted: {
     type: Boolean,
     default: false
-    // type: [
-    //   {
-    //     type: String,
-    //     enum: ["pending", "completed"]
-    //   }
-    // ],
-    // default: ["pending"]
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "User"
   }
 });
 
