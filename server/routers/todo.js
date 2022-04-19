@@ -21,11 +21,28 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   const userId = req.user.userId;
   try {
-    const todos = await Todo.find({ createdBy: userId })
+    const getNotCompletedTodo = await Todo.find({
+      createdBy: userId,
+      isCompleted: false
+    })
       .sort({ createdAt: -1 })
-      .populate("createdBy")
       .exec();
-    res.status(200).json(todos);
+    res.status(200).json(getNotCompletedTodo);
+  } catch (err) {
+    res.status(500).send("Failed to get todo");
+  }
+});
+
+router.get("/completed", async (req, res) => {
+  const userId = req.user.userId;
+  try {
+    const getCompletedTodo = await Todo.find({
+      createdBy: userId,
+      isCompleted: true
+    })
+      .sort({ createdAt: -1 })
+      .exec();
+    res.status(200).json(getCompletedTodo);
   } catch (err) {
     res.status(500).send("Failed to get todo");
   }
@@ -34,7 +51,6 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id);
     const todo = await Todo.find({ _id: id });
     res.json({ todo });
   } catch (err) {
@@ -43,5 +59,26 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {});
+router.patch("/:id", async (req, res) => {
+  const id = req.params.id;
+  const { userId } = req.user;
+  try {
+    const todo = await Todo.findOne({ _id: id });
+    todo.isCompleted = !todo.isCompleted;
+
+    if (todo.createdBy.toString() === userId) {
+      try {
+        const updatedTodo = await todo.save();
+        res.status(200).json(updatedTodo);
+      } catch (error) {
+        res.status(500).json(error);
+      }
+    } else {
+      res.status(401).json("You can only update your tasks!");
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 module.exports = router;

@@ -5,7 +5,7 @@ const createUserToken = user => {
   return (token = jwt.sign(
     { userId, email: user.email },
     process.env.JWT_SECRET,
-    { expiresIn: "24 h", subject: userId }
+    { expiresIn: "240 h", subject: userId }
   ));
 };
 
