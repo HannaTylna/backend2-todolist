@@ -1,12 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppContext } from "../App";
 
-export default function LoginPage(props) {
-  // const [username, setUsername] = useState("");
-  // const [password, setPassword] = useState("");
-  const { username, setUsername } = useContext(AppContext);
-  const { password, setPassword } = useContext(AppContext);
+export default function LoginPage() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
@@ -25,12 +22,13 @@ export default function LoginPage(props) {
     })
       .then(res => res.json())
       .then(data => {
-        //console.log(data);
+        console.log(data.user.username);
         const token = data.token;
         localStorage.setItem("todolist", token);
-        navigate("/home");
+        navigate("/todo");
       });
   };
+
   return (
     <>
       <form onSubmit={handleSubmit}>
