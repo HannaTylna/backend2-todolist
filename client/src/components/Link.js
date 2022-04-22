@@ -9,7 +9,7 @@ const StyledLink = styled.a`
   text-transform: uppercase;
   &:hover {
     border-bottom: ${props => props.border || "1px solid #000"};
-    color: ${props => props.colorHover};
+    color: ${props => props.colorHover || "#000"};
   }
 `;
 

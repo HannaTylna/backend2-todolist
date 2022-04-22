@@ -4,6 +4,7 @@ import styled from "styled-components";
 const StyledHeading1 = styled.h1`
   color: ${props => props.color || "#499edf"};
   margin: ${props => props.margin || "10px auto"};
+  text-align: center;
 `;
 const Heading1Center = styled(StyledHeading1)`
   text-align: ${props => props.textAlign || "center"};
