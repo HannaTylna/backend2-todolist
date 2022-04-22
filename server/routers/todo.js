@@ -11,6 +11,7 @@ router.post("/", async (req, res) => {
   const todo = new Todo({ createdBy: userId, task });
   try {
     const savedTask = await todo.save();
+
     res.status(200).json({ task: savedTask });
   } catch (err) {
     console.log(err);
@@ -26,6 +27,7 @@ router.get("/", async (req, res) => {
       isCompleted: false
     })
       .sort({ createdAt: -1 })
+      .populate("createdBy")
       .exec();
     res.status(200).json(getNotCompletedTodo);
   } catch (err) {
@@ -41,6 +43,7 @@ router.get("/completed", async (req, res) => {
       isCompleted: true
     })
       .sort({ createdAt: -1 })
+      .populate("createdBy")
       .exec();
     res.status(200).json(getCompletedTodo);
   } catch (err) {
