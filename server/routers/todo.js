@@ -22,14 +22,14 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   const userId = req.user.userId;
   try {
-    const getNotCompletedTodo = await Todo.find({
+    const todos = await Todo.find({
       createdBy: userId,
       isCompleted: false
     })
       .sort({ createdAt: -1 })
       .populate("createdBy")
       .exec();
-    res.status(200).json(getNotCompletedTodo);
+    res.status(200).json(todos);
   } catch (err) {
     res.status(500).send("Failed to get todo");
   }
@@ -38,14 +38,14 @@ router.get("/", async (req, res) => {
 router.get("/completed", async (req, res) => {
   const userId = req.user.userId;
   try {
-    const getCompletedTodo = await Todo.find({
+    const todos = await Todo.find({
       createdBy: userId,
       isCompleted: true
     })
       .sort({ createdAt: -1 })
       .populate("createdBy")
       .exec();
-    res.status(200).json(getCompletedTodo);
+    res.status(200).json(todos);
   } catch (err) {
     res.status(500).send("Failed to get todo");
   }

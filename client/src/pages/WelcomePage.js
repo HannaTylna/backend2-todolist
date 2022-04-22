@@ -22,8 +22,8 @@ export default function WelcomePage() {
 
     const API_URL = "http://localhost:8000/api/user/register";
     const payload = {
-      username: username,
-      password: password
+      username,
+      password
     };
     fetch(API_URL, {
       method: "POST",
@@ -55,7 +55,7 @@ export default function WelcomePage() {
             <input
               type="text"
               name="username"
-              value={username}
+              value={username ?? ""}
               onChange={e => setUsername(e.target.value)}
             />
           </Column>
@@ -70,7 +70,7 @@ export default function WelcomePage() {
             <input
               type="password"
               name="password"
-              value={password}
+              value={password ?? ""}
               onChange={e => setPassword(e.target.value)}
             />
           </Column>

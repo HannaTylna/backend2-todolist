@@ -11,6 +11,9 @@ const StyledLabel = styled.label`
   font-weight: bold;
   margin-left: 15px;
 `;
+const StyledInput = styled.input`
+  width: 90%;
+`;
 
 const FormInput = props => {
   const [focused, setFocused] = useState(false);
@@ -23,11 +26,11 @@ const FormInput = props => {
   return (
     <>
       <Row flex>
-        <Column col="1">
+        <Column col="0">
           <StyledLabel {...props}>{label}</StyledLabel>
         </Column>
-        <Column col="6">
-          <input
+        <Column col="12">
+          <StyledInput
             {...inputProps}
             onChange={onChange}
             onBlur={handleFocus}

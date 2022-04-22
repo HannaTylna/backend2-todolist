@@ -9,7 +9,6 @@ router.post("/register", async (req, res) => {
     const { username, password } = req.body;
     const newUser = new User({ username, password });
     const user = await newUser.save();
-    const token = createUserToken(user);
 
     res.json(user);
   } catch (error) {
@@ -38,13 +37,12 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const user = req.user;
-  const { userId } = user;
-  console.log(userId);
-  const databaseUser = await User.findOne({ _id: userId });
+  const currentUser = req.user;
+  const { userId } = currentUser;
+  const user = await User.findOne({ _id: userId });
   if (user) {
     res.json({
-      user: { username: databaseUser.username, token: req.token }
+      user
     });
   } else {
     res.sendStatus(400);

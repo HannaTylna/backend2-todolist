@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const StyledForm = styled.form`
   border-radius: 5px;
-  width: ${props => props.width || "30%"};
+  width: ${props => props.width || "70%"};
   padding: ${props => props.padding || "10px"};
   margin: ${props => props.margin || "100px auto 30px auto"};
   background: rgb(73, 158, 223);
@@ -13,10 +13,10 @@ const StyledForm = styled.form`
     rgba(95, 106, 145, 1) 57%
   );
   @media (max-width: 992px) {
-    width: 50%;
+    width: 70%;
   }
   @media (max-width: 768px) {
-    width: 60%;
+    width: 80%;
   }
 `;
 

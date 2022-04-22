@@ -1,74 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
 import Nav from "../components/Nav";
 import Heading1 from "../components/Heading1";
 import ToDoCreate from "../components/ToDoCreate";
+import Todo from "../components/Todo";
+import { AppContext } from "../App";
 
 export default function HomePage(props) {
-  // const [username, setUsername] = useState("");
-  const [todos, setTodos] = useState([]);
-  const [completedTodos, setCompletedTodos] = useState([]);
-
-  const navigate = useNavigate();
-
+  const { user, getUser } = useContext(AppContext);
   useEffect(() => {
-    const API_URL = "http://localhost:8000/api/todos";
-    const token = localStorage.getItem("todolist");
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    };
-
-    fetch(API_URL, {
-      method: "GET",
-      headers: headers
-    })
-      .then(response => response.json())
-      .then(data => {
-        setTodos(data);
-      });
-
-    fetch(`${API_URL}/completed`, {
-      method: "GET",
-      headers: headers
-    })
-      .then(response => response.json())
-      .then(data => {
-        setCompletedTodos(data);
-      });
-  }, []);
-
+    getUser();
+  }, [getUser]);
   return (
     <>
       <Nav />
+      <Heading1 margin="80px auto 30px auto">Todo List</Heading1>
+      <p>Hello, {user.username}!</p>
+      <Todo />
       <ToDoCreate onSuccess={props.refresh} />
-      <Heading1 margin="50px auto 30px auto">Todo List</Heading1>
-      {/* <p>Hello!</p> */}
-      {todos.length ? (
-        todos.map(item => {
-          return (
-            <div key={item._id}>
-              <input type="checkbox" name="completed" value={item.task} />
-              <label>{item.task}</label>
-            </div>
-          );
-        })
-      ) : (
-        <h3>No todo yet</h3>
-      )}{" "}
-      <Heading1 margin="100px auto 30px auto">Completed List</Heading1>
-      {completedTodos.length ? (
-        completedTodos.map(item => {
-          return (
-            <div key={item._id}>
-              <input type="checkbox" name="completed" value={item.task} />
-              <label>{item.task}</label>
-            </div>
-          );
-        })
-      ) : (
-        <h3>No todo yet</h3>
-      )}{" "}
     </>
   );
 }
