@@ -4,30 +4,14 @@ const { createUserToken } = require("../utils/auth");
 
 const router = Router();
 
-router.post("/login", async (req, res) => {
-  try {
-    const { username, password } = req.body.user;
-    const user = await User.login(username, password);
-
-    if (user) {
-      const token = createUserToken(user);
-      return res.json({ user: { token, username } });
-    } else {
-      res.sendStatus(401).json("Wrong credentials!");
-    }
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
 router.post("/register", async (req, res) => {
   try {
-    const { username, password } = req.body.user;
-    const user = new User({ username, password });
-    const createdUser = await user.save();
-    const token = createUserToken(createdUser);
+    const { username, password } = req.body;
+    const newUser = new User({ username, password });
+    const user = await newUser.save();
+    const token = createUserToken(user);
 
-    res.json({ user: { username: createdUser.username, token } });
+    res.json(user);
   } catch (error) {
     if (error.code && error.code === 11000) {
       res.status(400).json("User is already in the system");
@@ -37,7 +21,23 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const user = await User.login(username, password);
+
+    if (user) {
+      const token = createUserToken(user);
+      return res.json({ token, username });
+    } else {
+      res.sendStatus(401).json("Wrong credentials!");
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.get("/user", async (req, res) => {
   const user = req.user;
   const { userId } = user;
   console.log(userId);
