@@ -16,8 +16,8 @@ app.use(cors());
 app.use(express.json());
 app.use(authorizeUser);
 
-app.use("/", userRouter);
-app.use("/todo", todoRouter);
+app.use("/api/user", userRouter);
+app.use("/api/todos", todoRouter);
 
 mongoose.connect(`mongodb://localhost/toDoList`);
 

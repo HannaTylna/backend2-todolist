@@ -37,7 +37,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/user", async (req, res) => {
+router.get("/", async (req, res) => {
   const user = req.user;
   const { userId } = user;
   console.log(userId);
