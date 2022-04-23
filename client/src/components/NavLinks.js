@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export default function NavBarLink() {
   const navigate = useNavigate();
   const handleClick = async e => {
-    //localStorage.removeItem("todolist");
+    localStorage.removeItem("todolist");
     navigate("/login");
   };
 

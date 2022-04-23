@@ -3,8 +3,7 @@ const mongoose = require("mongoose");
 const todoSchema = new mongoose.Schema(
   {
     task: {
-      type: String,
-      required: true
+      type: String
     },
     isCompleted: {
       type: Boolean,
@@ -16,7 +15,7 @@ const todoSchema = new mongoose.Schema(
       ref: "User"
     },
     content: { type: String },
-    file: { type: String, default: "" }
+    file: { type: Array }
   },
   { timestamps: true }
 );

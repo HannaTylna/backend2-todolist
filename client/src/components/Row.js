@@ -8,6 +8,7 @@ const StyledRow = styled.div`
   border: ${props => props.border};
   padding: ${props => props.padding};
   box-shadow: ${props => props.boxShadow};
+  justify-content: ${props => props.justify};
 
   @media (max-width: 768px) {
     display: block;

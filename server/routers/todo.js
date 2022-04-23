@@ -3,29 +3,28 @@ const { User } = require("../models/user");
 const { Todo } = require("../models/todo");
 const { requireLogin } = require("./user");
 const multer = require("multer");
-const uuidv4 = require("uuid/v4");
+const path = require("path");
 
 const router = Router();
 
-const DIR = "./public/";
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, DIR);
+    cb(null, "public");
   },
   filename: (req, file, cb) => {
-    const fileName = file.originalname
-      .toLowerCase()
-      .split(" ")
-      .join("-");
-    cb(null, uuidv4() + "-" + fileName);
+    cb(null, Date.now() + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage: storage });
+
+const upload = multer({ storage });
 
 router.post("/", async (req, res) => {
   const { userId } = req.user;
   const task = req.body.task;
-  const todo = new Todo({ createdBy: userId, task });
+  const todo = new Todo({
+    createdBy: userId,
+    task
+  });
   try {
     const savedTask = await todo.save();
 
@@ -79,55 +78,28 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-//router.post("/:id/upload", async (req, res) => {});
-router.post("/:id/upload", upload.array("file"), (req, res, next) => {
-  const url = req.protocol + "://" + req.get("host");
-  const todo = new Todo({
-    _id: new mongoose.Types.ObjectId(),
-    name: req.body.name,
-    file: url + "/public/" + req.file.filename
-  });
-  todo
-    .save()
-    .then(result => {
-      res.status(201).json({
-        message: "User registered successfully!",
-        todoCreated: {
-          _id: result._id,
-          file: result.profileImg
-        }
-      });
-    })
-    .catch(err => {
-      console.log(err),
-        res.status(500).json({
-          error: err
-        });
-    });
-});
-// router.get("/:id/upload", (req, res, next) => {
-//   Todo.find().then(data => {
-//     res.status(200).json({
-//       message: "User list retrieved successfully!",
-//       users: data
-//     });
-//   });
-// });
-
-router.post("/:id", async (req, res) => {
+router.put("/:id/upload", upload.array("file"), async (req, res, next) => {
   const id = req.params.id;
-  const { task, content, file } = req.body;
-  await Todo.findOneAndUpdate(
-    { _id: id },
-    { $set: { file: file, task: task, content: content } },
-    { new: true },
-    (err, doc) => {
-      if (err) {
-        console.log("Something wrong when updating data!");
-      }
-    }
+  const filter = { _id: id };
+  const file = req.files;
+  const updatedTodo = await Todo.findOneAndUpdate(
+    filter,
+    { $set: { file } },
+    { new: true }
   );
-  res.json("Successfully");
+  res.json(updatedTodo);
+});
+
+router.put("/:id", async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: id };
+  const { task, content } = req.body;
+  const updatedTodo = await Todo.findOneAndUpdate(
+    filter,
+    { $set: { task, content } },
+    { new: true }
+  );
+  res.json(updatedTodo);
 });
 
 router.put("/:id/isCompleted", async (req, res) => {

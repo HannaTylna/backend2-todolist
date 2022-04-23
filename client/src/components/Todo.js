@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Row from "./Row";
 import Column from "./Column";
-import Button from "./Button";
 
 export default function Todo(props) {
   const [todos, setTodos] = useState([]);
@@ -16,7 +15,7 @@ export default function Todo(props) {
         Authorization: `Bearer ${token}`
       }
     })
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
         setTodos(data);
       });

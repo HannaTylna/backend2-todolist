@@ -10,24 +10,49 @@ import Table from "../components/Table";
 import TableBody from "../components/TableBody";
 import Row from "../components/Row";
 import Label from "../components/Label";
+import { toast } from "react-toastify";
 
-export default function TodoPage(props) {
+export default function TodoPage(props, onSuccess) {
+  const [files, setFiles] = useState([]);
   const params = useParams();
 
   const navigate = useNavigate();
   const [todoDetails, setTodoDetails] = useState({});
   const [task, setTask] = useState("");
-  const [createdAt] = useState("");
-  const [updatedAt] = useState("");
   const [content, setContent] = useState("");
-  const [file, setFile] = useState();
-  const [fileName, setFileName] = useState("");
 
   const url = `http://localhost:8000/api/todos/${params.id}`;
   const token = localStorage.getItem("todolist");
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`
+  };
+
+  const handleOnDelete = () => {
+    fetch(url, {
+      method: "DELETE",
+      headers: headers
+    }).then(res => {
+      navigate("/todos");
+    });
+  };
+
+  const handleOnSubmit = e => {
+    e.preventDefault();
+    const payload = {
+      task,
+      content
+    };
+    fetch(url, {
+      method: "PUT", //"PATCH"
+      headers: headers,
+      body: JSON.stringify(payload)
+    })
+      .then(result => result.json())
+      .then(data => {
+        console.log(data);
+        setTodoDetails(data);
+      });
   };
 
   useEffect(() => {
@@ -44,7 +69,7 @@ export default function TodoPage(props) {
   const handleOnClick = e => {
     e.preventDefault();
 
-    const payload = { task, content, createdAt, updatedAt };
+    const payload = { task, content };
     fetch(`${url}/isCompleted`, {
       method: "PUT", //"PATCH"
       headers: headers,
@@ -56,37 +81,7 @@ export default function TodoPage(props) {
     });
   };
 
-  const handleOnSubmit = e => {
-    e.preventDefault();
-  };
-  
-    onFileChange(e) {
-        this.setState({ file: e.target.files[0] })
-    }
-    onSubmit(e) {
-        e.preventDefault()
-        const formData = new FormData()
-        formData.append('file', this.state.file)
-        axios.post(`${url}/upload`, formData, {
-        }).then(res => {
-            console.log(res)
-        })
-    }
-
-  const formatedCreatedAt = new Date(todoDetails.createdAt).toLocaleString();
-  const formatedUpdatedAt = new Date(todoDetails.updatedAt).toLocaleString();
-  const formatedIsCompleted = todoDetails.isCompleted === true ? "Yes" : "No";
-
-  function handleOnDelete(id) {
-    fetch(url, {
-      method: "DELETE",
-      headers: headers
-    }).then(res => {
-      navigate("/todos");
-    });
-  }
-
-  function handleOnSelect(id) {
+  const handleOnSelect = id => {
     fetch(url, {
       method: "GET",
       headers: headers
@@ -96,108 +91,156 @@ export default function TodoPage(props) {
         setTask(todoDetails.task);
         setContent(todoDetails.content);
       });
-  }
+  };
+
+  const onInputChange = e => {
+    setFiles(e.target.files);
+  };
+
+  const onSubmit = e => {
+    e.preventDefault();
+
+    const data = new FormData();
+
+    for (let i = 0; i < files.length; i++) {
+      data.append("file", files[i]);
+    }
+
+    axios
+      .put(`${url}/upload`, data)
+      .then(response => {
+        toast.success("Upload Success");
+        console.log(response.data.file);
+        onSuccess(response.data);
+      })
+      .catch(e => {
+        toast.error("Upload Error");
+      });
+  };
 
   return (
     <>
       <Nav />
-      <Column col="5" width="80%">
-        <Heading2 margin="100px auto 30px auto">{todoDetails.task}</Heading2>
-        <Table background="#5f6a91">
-          <tbody>
-            <TableBody tr>
-              <TableBody fontWeight="bold" textAlign="left">
-                CreatedAt:
+      <Row justify="center">
+        <Column col="8" width="80%">
+          <Heading2 margin="100px auto 30px auto">{todoDetails.task}</Heading2>
+          <Table background="#5f6a91">
+            <tbody>
+              <TableBody tr>
+                <TableBody fontWeight="bold" textAlign="left">
+                  CreatedAt:
+                </TableBody>
+                <TableBody>
+                  {new Date(todoDetails.createdAt).toLocaleString()}
+                </TableBody>
               </TableBody>
-              <TableBody>{formatedCreatedAt}</TableBody>
-            </TableBody>
-            <TableBody tr>
-              <TableBody fontWeight="bold" textAlign="left">
-                UpdatedAt:
+              <TableBody tr>
+                <TableBody fontWeight="bold" textAlign="left">
+                  UpdatedAt:
+                </TableBody>
+                <TableBody>
+                  {new Date(todoDetails.updatedAt).toLocaleString()}
+                </TableBody>
               </TableBody>
-              <TableBody>{formatedUpdatedAt}</TableBody>
-            </TableBody>
-            <TableBody tr>
-              <TableBody fontWeight="bold" textAlign="left">
-                Content:
+              <TableBody tr>
+                <TableBody fontWeight="bold" textAlign="left">
+                  Content:
+                </TableBody>
+                <TableBody>{todoDetails.content}</TableBody>
               </TableBody>
-              <TableBody>{todoDetails.content}</TableBody>
-            </TableBody>
-            <TableBody tr>
-              <TableBody fontWeight="bold" textAlign="left">
-                IsCompleted:
+              <TableBody tr>
+                <TableBody fontWeight="bold" textAlign="left">
+                  IsCompleted:
+                </TableBody>
+                <TableBody>
+                  <TableBody>
+                    {todoDetails.isCompleted === true ? "Yes" : "No"}
+                  </TableBody>
+                </TableBody>
               </TableBody>
-              <TableBody>
-                <TableBody>{formatedIsCompleted}</TableBody>
+              <TableBody tr>
+                <TableBody></TableBody>
+                <TableBody>
+                  <Button onClick={() => handleOnSelect(todoDetails._id)}>
+                    Update
+                  </Button>
+                </TableBody>
               </TableBody>
-            </TableBody>
-            <TableBody tr>
-              <TableBody></TableBody>
-              <TableBody>
-                <Button onClick={() => handleOnSelect(todoDetails._id)}>
-                  Update
-                </Button>
-              </TableBody>
-            </TableBody>
-          </tbody>
-        </Table>
-      </Column>
-      <Column col="5" width="80%">
-        <Form>
-          <Heading2 color="#fff">Update information</Heading2>
-          <Row flex>
-            <Column col="4">
-              <Label htmlFor="username">Task: </Label>
-            </Column>
-            <Column col="8">
+            </tbody>
+          </Table>
+        </Column>
+      </Row>
+      <Row flex>
+        {/* {files.length ? (
+          files.map(file => {
+            return <p>{file.originalname}</p>;
+          })
+        ) : (
+          <h3>No files yet</h3>
+        )}{" "} */}
+      </Row>
+      <Row>
+        <Column col="7" width="100%">
+          <Form>
+            <Heading2 color="#fff">Update information</Heading2>
+            <Row flex>
+              <Column col="4">
+                <Label htmlFor="username">Task: </Label>
+              </Column>
+              <Column col="8">
+                <input
+                  placeholder="Update Todo"
+                  type="text"
+                  value={task ?? ""}
+                  onChange={e => setTask(e.target.value)}
+                  required="required"
+                />
+              </Column>
+              <br />
+            </Row>
+            <Row flex>
+              <Column col="4">
+                <Label htmlFor="username">Content: </Label>
+              </Column>
+              <Column col="8">
+                <input
+                  placeholder="Write description"
+                  type="text"
+                  value={content ?? ""}
+                  onChange={e => setContent(e.target.value)}
+                />
+              </Column>
+              <br />
+            </Row>
+            <Row flex>
+              <Button onClick={handleOnClick} type="submit" margin="10px auto">
+                Done
+              </Button>
+              <Button onClick={handleOnSubmit} type="submit" margin="10px auto">
+                Save
+              </Button>
+              <Button onClick={handleOnDelete} type="submit" margin="10px auto">
+                Delete
+              </Button>
+            </Row>
+          </Form>
+        </Column>
+        <Column col="5" width="100%">
+          <Form method="put" action="#" id="#" onSubmit={onSubmit}>
+            <div className="form-group files">
+              <Heading2>Upload Your File </Heading2>
               <input
-                placeholder="Update Todo"
-                type="text"
-                value={task ?? ""}
-                onChange={e => setTask(e.target.value)}
-                required="required"
+                type="file"
+                onChange={onInputChange}
+                className="form-control"
+                multiple
               />
-            </Column>
-            <br />
-          </Row>
-          <Row flex>
-            <Column col="4">
-              <Label htmlFor="username">Content: </Label>
-            </Column>
-            <Column col="8">
-              <input
-                placeholder="Write description"
-                type="text"
-                value={content ?? ""}
-                onChange={e => setContent(e.target.value)}
-              />
-            </Column>
-            <br />
-          </Row>
-          <Row flex>
-            <Button onClick={handleOnClick} type="submit" margin="10px auto">
-              Done
-            </Button>
-            <Button onClick={handleOnSubmit} type="submit" margin="10px auto">
-              Save
-            </Button>
-            <Button onClick={handleOnDelete} type="submit" margin="10px auto">
-              Delete
-            </Button>
-          </Row>
-        </Form>
-        <form onSubmit={this.onSubmit}>
-          <h3>React File Upload</h3>
-          <div className="form-group">
-            <input type="file" onChange={this.onFileChange} />
-          </div>
-          <div className="form-group">
-            <button className="btn btn-primary" type="submit">
-              Upload
-            </button>
-          </div>
-        </form>
-      </Column>
+            </div>
+
+            <button>Submit</button>
+          </Form>
+        </Column>
+      </Row>
     </>
   );
 }

@@ -22,9 +22,8 @@ export default function ToDoCreate(props) {
       },
       body: JSON.stringify(payload)
     })
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
-        console.log(data);
         props.onSuccess();
       });
   };

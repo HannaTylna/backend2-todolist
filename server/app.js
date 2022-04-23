@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const { authorizeUser } = require("./middleware/auth");
+const fileUpload = require("express-fileupload");
+const path = require("path");
 
 const userRouter = require("./routers/user");
 const todoRouter = require("./routers/todo");
@@ -15,6 +17,7 @@ const PORT = 8000;
 app.use(cors());
 app.use(express.json());
 app.use(authorizeUser);
+app.use(express.static("public"));
 
 app.use("/api/user", userRouter);
 app.use("/api/todos", todoRouter);
