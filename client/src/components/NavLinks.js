@@ -12,17 +12,17 @@ export default function NavBarLink() {
 
   return (
     <>
-      <Column col="1" width="10%">
+      <Column col="1">
         <Link href="/todos" color="#fff">
           Todos
         </Link>
       </Column>
-      <Column col="1" width="20%">
+      <Column col="3">
         <Link href="/completed" color="#fff">
           Completed Todos
         </Link>
       </Column>
-      <Column col="1" width="10%">
+      <Column col="1">
         <Link href="/login" color="#fff" onClick={handleClick}>
           Logout
         </Link>

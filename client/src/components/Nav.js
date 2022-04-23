@@ -5,7 +5,7 @@ import Column from "./Column";
 import NavLinks from "./NavLinks";
 
 const StyledNavBar = styled.div`
-  height: 50px;
+  height: 80px;
   background: #5f6a91;
   margin: 0px;
   position: fixed;
@@ -19,7 +19,7 @@ export default function Nav() {
   return (
     <StyledNavBar>
       <Flex align="center">
-        <Column col="3" width="0%"></Column>
+        <Column col="5" width="0%"></Column>
         <NavLinks />
       </Flex>
     </StyledNavBar>

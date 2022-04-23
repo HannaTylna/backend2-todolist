@@ -55,14 +55,14 @@ router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const todo = await Todo.find({ _id: id });
-    res.json({ todo });
+    res.json(todo);
   } catch (err) {
     console.log(err);
     res.status(500).send("Something is wrong");
   }
 });
 
-router.patch("/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   const id = req.params.id;
   const { userId } = req.user;
   try {

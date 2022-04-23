@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Row from "./Row";
 import Column from "./Column";
 import Button from "./Button";
-import AppContext from "../App";
 
-export default function Todo() {
+export default function Todo(props) {
   const [todos, setTodos] = useState([]);
-  useEffect(() => {
+
+  function fetchTodos() {
     const token = localStorage.getItem("todolist");
     const url = "http://localhost:8000/api/todos";
     fetch(url, {
@@ -21,11 +20,12 @@ export default function Todo() {
       .then(data => {
         setTodos(data);
       });
+  }
+
+  useEffect(() => {
+    fetchTodos();
   }, []);
 
-  const handleChange = () => {
-    //const url = `http://localhost:8000/api/todos/${id}`;
-  };
   return (
     <>
       {todos.length ? (
@@ -39,14 +39,8 @@ export default function Todo() {
               boxShadow="5px 10px #888888"
               margin="20px 0px"
             >
-              <Column col="1">
-                <input type="checkbox" name="completed" value={item._id} />
-              </Column>
-              <Column col="8">
-                <label>{item.task}</label>
-              </Column>
-              <Column col="3">
-                <Button onClick={handleChange}>Done</Button>
+              <Column col="12">
+                <a href={`/todos/${item._id}`}>{item.task}</a>
               </Column>
             </Row>
           );

@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import Container from "./components/Container";
 import CompletedPage from "./pages/CompletedPage";
+import TodoPage from "./pages/TodoPage";
 
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
@@ -44,6 +45,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/todos" element={<HomePage refresh={getUser} />} />
             <Route path="/completed" element={<CompletedPage />} />
+            <Route path="/todos/:id" element={<TodoPage />} />
           </Routes>
         </AppContext.Provider>
       </BrowserRouter>
