@@ -39,7 +39,8 @@ export default function Todo(props) {
               boxShadow="5px 10px #888888"
               margin="20px 0px"
             >
-              <Column col="12">
+              <Column col="1"></Column>
+              <Column col="11">
                 <a href={`/todos/${item._id}`}>{item.task}</a>
               </Column>
             </Row>

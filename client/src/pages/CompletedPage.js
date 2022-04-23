@@ -8,14 +8,14 @@ import Button from "../components/Button";
 export default function CompletedPage() {
   const [completedTodos, setCompletedTodos] = useState([]);
   useEffect(() => {
-    const API_URL = "http://localhost:8000/api/todos";
+    const url = "http://localhost:8000/api/todos/completed";
     const token = localStorage.getItem("todolist");
     const headers = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
     };
 
-    fetch(`${API_URL}/completed`, {
+    fetch(url, {
       method: "GET",
       headers: headers
     })
@@ -38,17 +38,9 @@ export default function CompletedPage() {
               padding="10px"
               boxShadow="5px 10px #888888"
             >
-              <Column col="1">
-                <input type="checkbox" name="completed" value={item.task} />
-              </Column>
-              <Column col="8">
-                <label>{item.task}</label>
-              </Column>
-              <Column col="2">
-                <Button>Restore</Button>
-              </Column>
-              <Column col="1">
-                <Button>Delete</Button>
+              <Column col="1"></Column>
+              <Column col="11">
+                <a href={`/todos/${item._id}`}>{item.task}</a>
               </Column>
             </Row>
           );

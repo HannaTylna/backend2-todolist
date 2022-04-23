@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import Container from "./components/Container";
 import CompletedPage from "./pages/CompletedPage";
 import TodoPage from "./pages/TodoPage";
+import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";

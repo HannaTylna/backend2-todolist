@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Nav from "../components/Nav";
 import Heading2 from "../components/Heading2";
 import Column from "../components/Column";
@@ -12,23 +13,27 @@ import Label from "../components/Label";
 
 export default function TodoPage(props) {
   const params = useParams();
+
+  const navigate = useNavigate();
   const [todoDetails, setTodoDetails] = useState({});
   const [task, setTask] = useState("");
   const [createdAt] = useState("");
   const [updatedAt] = useState("");
   const [content, setContent] = useState("");
+  const [file, setFile] = useState();
+  const [fileName, setFileName] = useState("");
 
   const url = `http://localhost:8000/api/todos/${params.id}`;
   const token = localStorage.getItem("todolist");
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("todolist");
     fetch(url, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      }
+      headers: headers
     })
       .then(res => res.json())
       .then(data => {
@@ -36,12 +41,9 @@ export default function TodoPage(props) {
       });
   }, [params.id, url]);
 
-  const handleClick = e => {
+  const handleOnClick = e => {
     e.preventDefault();
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    };
+
     const payload = { task, content, createdAt, updatedAt };
     fetch(`${url}/isCompleted`, {
       method: "PUT", //"PATCH"
@@ -54,38 +56,40 @@ export default function TodoPage(props) {
     });
   };
 
-  const handleSubmit = e => {
+  const handleOnSubmit = e => {
     e.preventDefault();
   };
+  
+    onFileChange(e) {
+        this.setState({ file: e.target.files[0] })
+    }
+    onSubmit(e) {
+        e.preventDefault()
+        const formData = new FormData()
+        formData.append('file', this.state.file)
+        axios.post(`${url}/upload`, formData, {
+        }).then(res => {
+            console.log(res)
+        })
+    }
 
   const formatedCreatedAt = new Date(todoDetails.createdAt).toLocaleString();
   const formatedUpdatedAt = new Date(todoDetails.updatedAt).toLocaleString();
   const formatedIsCompleted = todoDetails.isCompleted === true ? "Yes" : "No";
 
   function handleOnDelete(id) {
-    //     console.log(id);
-    //     const url = `https://frebi.willandskill.eu/api/v1/customers/${props.id}/`;
-    //     const token = localStorage.getItem("exam");
-    //     const headers = {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${token}`
-    //     };
-    //     fetch(url, {
-    //       method: "DELETE",
-    //       headers: headers
-    //     }).then(res => {
-    //       props.refresh_customer();
-    //       navigate("/home");
-    //});
+    fetch(url, {
+      method: "DELETE",
+      headers: headers
+    }).then(res => {
+      navigate("/todos");
+    });
   }
 
   function handleOnSelect(id) {
     fetch(url, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      }
+      headers: headers
     })
       .then(res => res.json())
       .then(data => {
@@ -139,7 +143,7 @@ export default function TodoPage(props) {
         </Table>
       </Column>
       <Column col="5" width="80%">
-        <Form onSubmit={handleSubmit}>
+        <Form>
           <Heading2 color="#fff">Update information</Heading2>
           <Row flex>
             <Column col="4">
@@ -171,14 +175,28 @@ export default function TodoPage(props) {
             <br />
           </Row>
           <Row flex>
-            <Button onClick={handleClick} type="submit" margin="10px auto">
+            <Button onClick={handleOnClick} type="submit" margin="10px auto">
               Done
             </Button>
-            <Button type="submit" margin="10px auto">
+            <Button onClick={handleOnSubmit} type="submit" margin="10px auto">
               Save
+            </Button>
+            <Button onClick={handleOnDelete} type="submit" margin="10px auto">
+              Delete
             </Button>
           </Row>
         </Form>
+        <form onSubmit={this.onSubmit}>
+          <h3>React File Upload</h3>
+          <div className="form-group">
+            <input type="file" onChange={this.onFileChange} />
+          </div>
+          <div className="form-group">
+            <button className="btn btn-primary" type="submit">
+              Upload
+            </button>
+          </div>
+        </form>
       </Column>
     </>
   );

@@ -15,7 +15,8 @@ const todoSchema = new mongoose.Schema(
       required: true,
       ref: "User"
     },
-    content: { type: String }
+    content: { type: String },
+    file: { type: String, default: "" }
   },
   { timestamps: true }
 );
