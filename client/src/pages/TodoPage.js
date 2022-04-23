@@ -18,7 +18,7 @@ export default function TodoPage(props) {
   const [updatedAt] = useState("");
   const [content, setContent] = useState("");
 
-  const url = `http://localhost:8000/api/todos/${params.id}/`;
+  const url = `http://localhost:8000/api/todos/${params.id}`;
   const token = localStorage.getItem("todolist");
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function TodoPage(props) {
       Authorization: `Bearer ${token}`
     };
     const payload = { task, content, createdAt, updatedAt };
-    fetch(url, {
+    fetch(`${url}/isCompleted`, {
       method: "PUT", //"PATCH"
       headers: headers,
       body: JSON.stringify(payload)
