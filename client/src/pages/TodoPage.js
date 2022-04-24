@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 
 export default function TodoPage(props, onSuccess) {
   const [files, setFiles] = useState([]);
+  const [hidden, setHidden] = useState(false);
   const params = useParams();
 
   const navigate = useNavigate();
@@ -26,15 +27,6 @@ export default function TodoPage(props, onSuccess) {
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`
-  };
-
-  const handleOnDelete = () => {
-    fetch(url, {
-      method: "DELETE",
-      headers: headers
-    }).then(res => {
-      navigate("/todos");
-    });
   };
 
   const handleOnSubmit = e => {
@@ -109,15 +101,26 @@ export default function TodoPage(props, onSuccess) {
     axios
       .put(`${url}/upload`, data)
       .then(response => {
-        toast.success("Upload Success");
-        console.log(response.data.file);
-        onSuccess(response.data);
+        setFiles(response.data.file);
+        window.location.reload(false);
+        // toast.success("Upload Success");
+        // onSuccess(response.data.file);
       })
       .catch(e => {
         toast.error("Upload Error");
       });
   };
 
+  const handleOnDelete = id => {
+    fetch(url, {
+      method: "DELETE",
+      headers: headers
+    }).then(res => {
+      navigate("/todos");
+    });
+  };
+
+  console.log(todoDetails.file);
   return (
     <>
       <Nav />
@@ -126,6 +129,29 @@ export default function TodoPage(props, onSuccess) {
           <Heading2 margin="100px auto 30px auto">{todoDetails.task}</Heading2>
           <Table background="#5f6a91">
             <tbody>
+              <TableBody tr>
+                <TableBody fontWeight="bold" textAlign="left">
+                  Files:
+                </TableBody>
+                <TableBody>
+                  {todoDetails.file && todoDetails.file.length
+                    ? todoDetails.file.map(item => {
+                        return (
+                          <>
+                            {!hidden ? <p>{item.originalname}</p> : null}
+
+                            <button
+                              hidden={hidden}
+                              onClick={() => setHidden(s => !s)}
+                            >
+                              Delete
+                            </button>
+                          </>
+                        );
+                      })
+                    : []}
+                </TableBody>
+              </TableBody>
               <TableBody tr>
                 <TableBody fontWeight="bold" textAlign="left">
                   CreatedAt:
@@ -169,15 +195,6 @@ export default function TodoPage(props, onSuccess) {
             </tbody>
           </Table>
         </Column>
-      </Row>
-      <Row flex>
-        {/* {files.length ? (
-          files.map(file => {
-            return <p>{file.originalname}</p>;
-          })
-        ) : (
-          <h3>No files yet</h3>
-        )}{" "} */}
       </Row>
       <Row>
         <Column col="7" width="100%">
@@ -228,7 +245,7 @@ export default function TodoPage(props, onSuccess) {
         <Column col="5" width="100%">
           <Form method="put" action="#" id="#" onSubmit={onSubmit}>
             <div className="form-group files">
-              <Heading2>Upload Your File </Heading2>
+              <Heading2 color="#fff">Upload Files </Heading2>
               <input
                 type="file"
                 onChange={onInputChange}
@@ -236,7 +253,6 @@ export default function TodoPage(props, onSuccess) {
                 multiple
               />
             </div>
-
             <button>Submit</button>
           </Form>
         </Column>
