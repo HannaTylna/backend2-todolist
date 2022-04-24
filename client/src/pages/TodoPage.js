@@ -21,6 +21,7 @@ export default function TodoPage(props, onSuccess) {
   const [todoDetails, setTodoDetails] = useState({});
   const [task, setTask] = useState("");
   const [content, setContent] = useState("");
+  const [tagList, setTagList] = useState("");
 
   const url = `http://localhost:8000/api/todos/${params.id}`;
   const token = localStorage.getItem("todolist");
@@ -33,7 +34,8 @@ export default function TodoPage(props, onSuccess) {
     e.preventDefault();
     const payload = {
       task,
-      content
+      content,
+      tagList
     };
     fetch(url, {
       method: "PUT", //"PATCH"
@@ -103,8 +105,8 @@ export default function TodoPage(props, onSuccess) {
       .then(response => {
         setFiles(response.data.file);
         window.location.reload(false);
-        // toast.success("Upload Success");
-        // onSuccess(response.data.file);
+        toast.success("Upload Success");
+        onSuccess(response.data.file);
       })
       .catch(e => {
         toast.error("Upload Error");
@@ -135,9 +137,9 @@ export default function TodoPage(props, onSuccess) {
                 </TableBody>
                 <TableBody>
                   {todoDetails.file && todoDetails.file.length
-                    ? todoDetails.file.map(item => {
+                    ? todoDetails.file.map((item, index) => {
                         return (
-                          <>
+                          <div key={index}>
                             {!hidden ? <p>{item.originalname}</p> : null}
 
                             <button
@@ -146,7 +148,7 @@ export default function TodoPage(props, onSuccess) {
                             >
                               Delete
                             </button>
-                          </>
+                          </div>
                         );
                       })
                     : []}
@@ -225,6 +227,20 @@ export default function TodoPage(props, onSuccess) {
                   type="text"
                   value={content ?? ""}
                   onChange={e => setContent(e.target.value)}
+                />
+              </Column>
+              <br />
+            </Row>
+            <Row flex>
+              <Column col="4">
+                <Label htmlFor="username">Tag: </Label>
+              </Column>
+              <Column col="8">
+                <input
+                  placeholder="Create label"
+                  type="text"
+                  value={tagList ?? ""}
+                  onChange={e => setTagList(e.target.value)}
                 />
               </Column>
               <br />
