@@ -21,7 +21,6 @@ export default function TodoPage(props, onSuccess) {
   const [todoDetails, setTodoDetails] = useState({});
   const [task, setTask] = useState("");
   const [content, setContent] = useState("");
-  const [tagList, setTagList] = useState("");
 
   const url = `http://localhost:8000/api/todos/${params.id}`;
   const token = localStorage.getItem("todolist");
@@ -34,8 +33,7 @@ export default function TodoPage(props, onSuccess) {
     e.preventDefault();
     const payload = {
       task,
-      content,
-      tagList
+      content
     };
     fetch(url, {
       method: "PUT", //"PATCH"
@@ -227,20 +225,6 @@ export default function TodoPage(props, onSuccess) {
                   type="text"
                   value={content ?? ""}
                   onChange={e => setContent(e.target.value)}
-                />
-              </Column>
-              <br />
-            </Row>
-            <Row flex>
-              <Column col="4">
-                <Label htmlFor="username">Tag: </Label>
-              </Column>
-              <Column col="8">
-                <input
-                  placeholder="Create label"
-                  type="text"
-                  value={tagList ?? ""}
-                  onChange={e => setTagList(e.target.value)}
                 />
               </Column>
               <br />
